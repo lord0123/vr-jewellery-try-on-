@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurora Luxury - Virtual Jewelry Boutique</title>
+    <!-- Tailwind CSS for modern luxury design -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Cormorant Garamond & Montserrat -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght=0,400;0,600;0,700;1,400&family=Montserrat:wght=300;400;500;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium E-commerce Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Three.js and MediaPipe Face Mesh Dependencies via High-Performance CDNs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-stone-50 font-['Montserrat'] text-stone-900 selection:bg-amber-100 antialiased overflow-x-hidden">
+
+    <!-- High-Performance SVG Sharpening Filter for Low-Quality Webcams -->
+    <svg style="display: none;">
+        <filter id="high-clarity-sharpen">
+            <feConvolveMatrix order="3" kernelMatrix="0 -1 0 -1 5 -1 0 -1 0" />
+        </filter>
+    </svg>
+
+    <!-- Luxury Navigation Header -->
+    <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-stone-200/60 shadow-sm transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <span class="text-xs uppercase tracking-[0.25em] text-stone-500 font-light hidden sm:inline-block">Est. 2026</span>
+            </div>
+            
+            <div class="text-center">
+                <h1 class="font-['Cormorant_Garamond'] text-2xl sm:text-3xl font-bold tracking-[0.15em] text-stone-800 uppercase">AURORA</h1>
+                <p class="text-[9px] uppercase tracking-[0.4em] text-amber-600 font-semibold -mt-1">Haute Joaillerie</p>
+            </div>
+
+            <div class="flex items-center space-x-6 text-stone-700">
+                <!-- Admin Floating Trigger Toggle -->
+                <button id="admin-toggle-btn" class="hover:text-amber-600 transition-colors relative" title="Merchant Gold Rate Settings">
+                    <i class="fa-solid fa-sliders text-lg"></i>
+                </button>
+                <div class="relative cursor-pointer group" id="bag-btn">
+                    <i class="fa-solid fa-shopping-bag text-lg hover:text-amber-600 transition-colors"></i>
+                    <span id="bag-count" class="absolute -top-2 -right-2 bg-amber-600 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center opacity-0 transition-opacity">0</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Interactive E-Commerce Dashboard / Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        
+        <!-- Live Gold Price Dashboard Card -->
+        <section class="mb-10 bg-white border border-stone-200/80 rounded-xl p-6 shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-6 transition-all hover:shadow-md">
+            <div>
+                <h2 class="font-['Cormorant_Garamond'] text-2xl font-bold text-stone-800">Daily Live Market Pricing</h2>
+                <p class="text-xs text-stone-500 mt-1">Real-time calculations based on active gold purity weight and government taxes.</p>
+            </div>
+            <div class="flex items-center gap-6">
+                <div class="bg-amber-50 border border-amber-100 rounded-lg p-4 min-w-[160px]">
+                    <span class="text-[10px] uppercase tracking-wider text-amber-700 font-semibold block">Gold Base Price (22K)</span>
+                    <span class="text-2xl font-semibold text-stone-800" id="display-gold-price">₹-- /g</span>
+                </div>
+                <div class="bg-stone-50 border border-stone-100 rounded-lg p-4 min-w-[120px]">
+                    <span class="text-[10px] uppercase tracking-wider text-stone-500 font-semibold block">GST (Govt Tax)</span>
+                    <span class="text-xl font-semibold text-stone-700">3%</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic Storefront Grid: 2 Columns, 2 Rows side-by-side template -->
+        <section class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8" id="product-grid">
+            <!-- Product Cards will be generated here dynamically by app.js -->
+        </section>
+    </main>
+
+    <!-- Merchant Settings Floating Console (Daily Gold Price Variable Editor) -->
+    <div id="admin-panel" class="fixed right-6 bottom-6 z-50 bg-white/95 backdrop-blur-md border border-stone-200 shadow-2xl rounded-2xl p-6 w-80 transform translate-y-20 opacity-0 pointer-events-none transition-all duration-300 ease-out">
+        <div class="flex justify-between items-center border-b border-stone-200 pb-3 mb-4">
+            <h3 class="font-semibold text-stone-800 text-sm tracking-wider uppercase"><i class="fa-solid fa-gears mr-2 text-amber-600"></i>Store Settings</h3>
+            <button id="admin-close-btn" class="text-stone-400 hover:text-stone-600"><i class="fa-solid fa-times"></i></button>
+        </div>
+        <div class="space-y-4">
+            <div>
+                <label class="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Base Gold Price (₹ per Gram)</label>
+                <div class="relative">
+                    <span class="absolute left-3 top-2.5 text-stone-400 font-semibold">₹</span>
+                    <input type="number" id="input-gold-price" value="6200" class="pl-7 pr-3 py-2 w-full border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent font-medium text-stone-800">
+                </div>
+                <p class="text-[10px] text-stone-400 mt-1">Changes are instantly applied across the catalog.</p>
+            </div>
+            <button id="save-settings-btn" class="w-full bg-stone-900 hover:bg-stone-800 text-white py-3 rounded-lg text-xs font-semibold uppercase tracking-widest transition-colors shadow-lg shadow-stone-900/10">Apply Settings</button>
+        </div>
+    </div>
+
+    <!-- Product Details Modal (Glassmorphism Luxury Card Overlay) -->
+    <div id="details-modal" class="fixed inset-0 z-50 overflow-y-auto hidden">
+        <!-- Modal Backdrop -->
+        <div class="fixed inset-0 bg-stone-950/40 backdrop-blur-sm transition-opacity"></div>
+        
+        <!-- Modal Content Container -->
+        <div class="flex min-h-full items-center justify-center p-4 sm:p-6 lg:p-8 relative">
+            <div class="relative w-full max-w-4xl bg-white/95 backdrop-blur-md border border-stone-200 rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row transform scale-95 opacity-0 transition-all duration-300" id="details-modal-box">
+                <!-- Close Button -->
+                <button id="modal-close-btn" class="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-600 flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+
+                <!-- Left Column: Product Premium Visual -->
+                <div class="w-full md:w-1/2 bg-stone-100 p-8 flex items-center justify-center border-r border-stone-200/60 relative min-h-[300px]">
+                    <img id="modal-img" src="" alt="Product View" class="max-h-[350px] object-contain drop-shadow-xl select-none">
+                    <!-- Elegant Primary Key Badge -->
+                    <span class="absolute bottom-4 left-4 bg-stone-900 text-stone-100 text-[10px] tracking-widest uppercase py-1 px-3 rounded-full font-light" id="modal-pk">PK: NULL</span>
+                </div>
+
+                <!-- Right Column: Details & Calculator Sheet -->
+                <div class="w-full md:w-1/2 p-8 sm:p-10 flex flex-col justify-between">
+                    <div>
+                        <span class="text-xs uppercase tracking-widest text-amber-600 font-semibold" id="modal-category">NECKLACE</span>
+                        <h2 class="font-['Cormorant_Garamond'] text-3xl font-semibold tracking-wide text-stone-800 mt-1 mb-4" id="modal-name">Diamond Haram</h2>
+                        <p class="text-sm text-stone-500 leading-relaxed mb-6 font-light" id="modal-desc"></p>
+                        
+                        <!-- Technical Breakdown Pricing Sheet -->
+                        <div class="border-t border-b border-stone-200/60 py-4 mb-6 space-y-2">
+                            <div class="flex justify-between text-xs text-stone-500">
+                                <span>Metal Weight</span>
+                                <span class="font-semibold text-stone-700" id="modal-weight">0.00g</span>
+                            </div>
+                            <div class="flex justify-between text-xs text-stone-500">
+                                <span>Wastage Component</span>
+                                <span class="font-semibold text-stone-700" id="modal-wastage">0%</span>
+                            </div>
+                            <div class="flex justify-between text-xs text-stone-500">
+                                <span>Making Charges</span>
+                                <span class="font-semibold text-stone-700" id="modal-making">0%</span>
+                            </div>
+                            <div class="flex justify-between text-xs text-stone-500">
+                                <span>GST State Tax (3%)</span>
+                                <span class="font-semibold text-stone-700" id="modal-gst">₹0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex items-baseline justify-between mb-6">
+                            <span class="text-xs uppercase tracking-widest text-stone-400 font-medium">Estimated Net Price</span>
+                            <span class="text-3xl font-light text-stone-800" id="modal-price">₹0</span>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <button id="modal-try-btn" class="bg-amber-600 hover:bg-amber-700 text-white py-4 rounded-xl text-xs font-semibold uppercase tracking-widest transition-all duration-300 shadow-lg shadow-amber-600/10 flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-camera text-sm"></i> Try On Live
+                            </button>
+                            <button id="modal-bag-btn" class="border border-stone-300 hover:bg-stone-50 text-stone-700 py-4 rounded-xl text-xs font-semibold uppercase tracking-widest transition-colors duration-300 flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-shopping-bag text-sm"></i> Add To Bag
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Augmented Reality (AR) Live Mirror Modal Overlay -->
+    <div id="ar-modal" class="fixed inset-0 z-50 hidden flex flex-col justify-end bg-black">
+        <!-- Live Camera Stream -->
+        <video id="webcam" autoplay playsinline muted class="absolute inset-0 w-full h-full object-cover pointer-events-none opacity-0"></video>
+        
+        <!-- Live Three.js WebGL Interactive Overlaid Layer -->
+        <canvas id="ar-canvas" class="absolute inset-0 w-full h-full object-cover pointer-events-none z-10"></canvas>
+        
+        <!-- Camera Video Adjustments & Calibration HUD -->
+        <div class="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-6 sm:p-8 flex flex-col gap-6">
+            
+            <!-- Live AR Calibration Specifications card -->
+            <div class="flex justify-between items-center max-w-4xl mx-auto w-full bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-4 sm:p-5 text-white shadow-2xl">
+                <div class="flex items-center space-x-4">
+                    <img id="ar-hud-img" src="" alt="Active Item" class="w-16 h-16 object-contain bg-white/5 rounded-xl border border-white/5 p-1">
+                    <div>
+                        <span class="text-[10px] text-amber-500 uppercase tracking-widest font-semibold block">Now Trying On</span>
+                        <h4 class="font-['Cormorant_Garamond'] text-lg font-semibold tracking-wide" id="ar-hud-name">Gold Haram</h4>
+                        <p class="text-xs text-white/60" id="ar-hud-specs">45.00g | Est: ₹--</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <!-- Advanced Camera Video Enhancement Controls -->
+                    <button id="ar-enhance-btn" class="w-10 h-10 rounded-xl bg-white/10 border border-white/10 hover:bg-white/20 flex items-center justify-center text-amber-400 transition-all shadow-md" title="Optimize Video Quality">
+                        <i class="fa-solid fa-wand-magic-sparkles text-lg"></i>
+                    </button>
+                    <!-- Close VTO Screen -->
+                    <button id="ar-close-btn" class="w-10 h-10 rounded-xl bg-red-500/20 border border-red-500/30 hover:bg-red-500/30 flex items-center justify-center text-red-400 transition-all shadow-md" title="Exit AR Mode">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Operational Camera Control Trigger Panel -->
+            <div class="flex justify-center items-center gap-6">
+                <!-- Capture Snapshot Button -->
+                <button id="ar-capture-btn" class="w-16 h-16 rounded-full bg-white border-4 border-amber-600 hover:scale-105 transition-all active:scale-95 shadow-xl flex items-center justify-center text-stone-800" title="Take Showcase Photo">
+                    <i class="fa-solid fa-camera text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Camera Status Indicator Loader overlay -->
+        <div id="ar-loading" class="absolute inset-0 bg-stone-950 z-30 flex flex-col items-center justify-center text-white">
+            <div class="relative w-20 h-20 mb-6">
+                <!-- Luxurious Golden Spinner Circular animation -->
+                <div class="absolute inset-0 rounded-full border-4 border-stone-800"></div>
+                <div class="absolute inset-0 rounded-full border-4 border-t-amber-600 animate-spin"></div>
+            </div>
+            <h3 class="font-['Cormorant_Garamond'] text-xl tracking-wider text-amber-100 font-semibold mb-2">Initializing AR Optics</h3>
+            <p class="text-xs text-stone-400 px-4 text-center max-w-[280px]">Loading on-device computer vision models. Please align your face in front of the camera.</p>
+        </div>
+    </div>
+
+    <!-- Live Shopping Bag Drawer Overlay Panel -->
+    <div id="bag-drawer" class="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-white border-l border-stone-200/60 shadow-2xl transform translate-x-full transition-transform duration-300 ease-out hidden">
+        <div class="h-full flex flex-col justify-between">
+            <div class="p-6 border-b border-stone-200">
+                <div class="flex justify-between items-center">
+                    <h3 class="font-['Cormorant_Garamond'] text-2xl font-bold text-stone-800"><i class="fa-solid fa-bag-shopping mr-3 text-amber-600"></i>Shopping Bag</h3>
+                    <button id="bag-close-btn" class="text-stone-400 hover:text-stone-600 text-lg"><i class="fa-solid fa-times"></i></button>
+                </div>
+            </div>
+            
+            <div class="p-6 flex-1 overflow-y-auto space-y-4" id="bag-items">
+                <!-- Cart Items will be generated here -->
+                <div class="text-center text-stone-400 py-10 font-light text-sm" id="bag-empty">Your shopping bag is empty.</div>
+            </div>
+
+            <div class="p-6 border-t border-stone-200 bg-stone-50 space-y-4">
+                <div class="flex justify-between font-semibold text-stone-800">
+                    <span>Subtotal</span>
+                    <span id="bag-subtotal">₹0</span>
+                </div>
+                <button class="w-full bg-stone-900 hover:bg-stone-800 text-white py-4 rounded-xl text-xs font-semibold uppercase tracking-widest transition-colors shadow-lg">Proceed to Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

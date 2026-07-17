@@ -1,0 +1,72 @@
+/* style.css - Luxury Virtual Boutique Style Guide */
+
+/* Elegant Scrollbar for a premium feel */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #f5f5f4; 
+}
+::-webkit-scrollbar-thumb {
+    background: #d6d3d1; 
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a29e; 
+}
+
+/* Base body typography adjustments */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Glassmorphism panel styling */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(220, 215, 210, 0.6);
+}
+
+/* Product Card Interactive Transitions */
+.product-card {
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px -10px rgba(120, 110, 100, 0.15);
+}
+
+/* Advanced Webcam Video Adjustments for Live Mirror Feel */
+#webcam {
+    transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    object-fit: cover;
+    /* Mirror-Clarity Enhancement Layer */
+    filter: contrast(1.08) brightness(1.03) saturate(1.04);
+    transition: filter 0.3s ease;
+}
+
+/* Apply SVG Sharpening filter on Webcam frame when enhanced */
+#webcam.enhanced {
+    filter: url(#high-clarity-sharpen) contrast(1.1) brightness(1.05) saturate(1.05);
+}
+
+/* WebGL transparent canvas alignment */
+#ar-canvas {
+    transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    pointer-events: none;
+}
+
+/* Fluid UI layout for the shopping cart/bag drawer */
+#bag-drawer {
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Smooth zoom-in/out scale animations for models */
+.modal-transition {
+    transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
